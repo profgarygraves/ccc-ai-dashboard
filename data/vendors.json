@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Element 451",
+    "useCases": [
+      "Student Recruitment / FAFSA Support",
+      "Student Recruitment / Vision 2030 Alignment",
+      "Student Recruitment / Admissions & Records",
+      "Student Recruitment / Dual Enrollment",
+      "Student Services / 24-7 AI Support",
+      "Student Recruitment / Marketing Automation",
+      "Student Success / Guided Pathways",
+      "Student Success / Tracking & Engagement",
+      "Student Recruitment / Promise Program",
+      "Student Outreach / Financial Aid Navigation",
+      "Student Recruitment / CRM"
+    ],
+    "collegeCount": 19,
+    "website": "",
+    "notes": ""
+  },
+  {
+    "id": 2,
+    "name": "Gravyty (Ocelot)",
+    "useCases": [
+      "Student Services / Navigation"
+    ],
+    "collegeCount": 1,
+    "website": "",
+    "notes": ""
+  },
+  {
+    "id": 3,
+    "name": "Mainstay",
+    "useCases": [
+      "Student Outreach / Financial Aid Navigation"
+    ],
+    "collegeCount": 3,
+    "website": "",
+    "notes": ""
+  },
+  {
+    "id": 4,
+    "name": "N2N Services",
+    "useCases": [
+      "Financial Aid Fraud Detection",
+      "Enrollment Integrity / Fraud Detection",
+      "Student Services / Navigation"
+    ],
+    "collegeCount": 69,
+    "website": "",
+    "notes": ""
+  },
+  {
+    "id": 5,
+    "name": "Nectir",
+    "useCases": [
+      "Academic Support / Course Assistant"
+    ],
+    "collegeCount": 48,
+    "website": "",
+    "notes": ""
+  },
+  {
+    "id": 6,
+    "name": "Playlab",
+    "useCases": [
+      "Faculty Support / Custom AI Tools"
+    ],
+    "collegeCount": 2,
+    "website": "",
+    "notes": ""
+  }
+]

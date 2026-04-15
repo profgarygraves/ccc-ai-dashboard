@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCC Agentic AI Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark py-2">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <i class="bi bi-mortarboard-fill me-2"></i>CCC Agentic AI Dashboard
+        <span class="badge bg-warning text-dark ms-2">2025–2026</span>
+      </a>
+      <div>
+        <a href="admin.html" class="btn btn-outline-light btn-sm me-2"><i class="bi bi-pencil-square me-1"></i>Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-3 px-md-4 py-4">
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card">
+          <div class="stat-value" id="statInitiatives">—</div>
+          <div class="stat-label">AI Initiatives</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card green">
+          <div class="stat-value" id="statColleges">—</div>
+          <div class="stat-label">Colleges</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card teal">
+          <div class="stat-value" id="statDeployed">—</div>
+          <div class="stat-label">Deployed</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card orange">
+          <div class="stat-value" id="statPilots">—</div>
+          <div class="stat-label">Pilots</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card purple">
+          <div class="stat-value" id="statVendors">—</div>
+          <div class="stat-label">Vendors</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card gold">
+          <div class="stat-value" id="statRegions">—</div>
+          <div class="stat-label">Regions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vendor Summary -->
+    <div class="mb-4">
+      <h6 class="text-muted text-uppercase small mb-3"><i class="bi bi-building me-1"></i>Vendors &amp; Partners</h6>
+      <div class="row g-3 row-cols-2 row-cols-md-3 row-cols-lg-6" id="vendorCards"></div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="search-section mb-3" id="dataSection">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label small text-muted mb-1">Search</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" id="searchInput" placeholder="College, vendor, program...">
+          </div>
+        </div>
+        <div class="col-6 col-md">
+          <label class="form-label small text-muted mb-1">Region</label>
+          <select class="form-select form-select-sm" id="filterRegion"><option value="">All Regions</option></select>
+        </div>
+        <div class="col-6 col-md">
+          <label class="form-label small text-muted mb-1">Vendor</label>
+          <select class="form-select form-select-sm" id="filterVendor"><option value="">All Vendors</option></select>
+        </div>
+        <div class="col-6 col-md">
+          <label class="form-label small text-muted mb-1">Stage</label>
+          <select class="form-select form-select-sm" id="filterStage"><option value="">All Stages</option></select>
+        </div>
+        <div class="col-6 col-md">
+          <label class="form-label small text-muted mb-1">Risk Tier</label>
+          <select class="form-select form-select-sm" id="filterRisk"><option value="">All Tiers</option></select>
+        </div>
+        <div class="col-6 col-md">
+          <label class="form-label small text-muted mb-1">Use Case</label>
+          <select class="form-select form-select-sm" id="filterUseCase"><option value="">All Use Cases</option></select>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-outline-secondary btn-sm" id="clearFilters" title="Clear all filters">
+            <i class="bi bi-x-circle me-1"></i>Clear
+          </button>
+        </div>
+      </div>
+      <div id="activeFilters" class="mt-2"></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div class="results-info" id="resultsInfo"></div>
+      <div class="view-toggle btn-group btn-group-sm">
+        <button class="btn btn-outline-secondary active" data-view="table"><i class="bi bi-table"></i></button>
+        <button class="btn btn-outline-secondary" data-view="cards"><i class="bi bi-grid-3x3-gap"></i></button>
+      </div>
+    </div>
+
+    <!-- Table View -->
+    <div class="data-table-container" id="tableView">
+      <div class="table-responsive">
+        <table class="table data-table table-hover">
+          <thead>
+            <tr>
+              <th data-sort="collegeName">College <span class="sort-icon"></span></th>
+              <th data-sort="district">District <span class="sort-icon"></span></th>
+              <th data-sort="region">Region <span class="sort-icon"></span></th>
+              <th data-sort="aiProgram">AI Program <span class="sort-icon"></span></th>
+              <th data-sort="vendor">Vendor <span class="sort-icon"></span></th>
+              <th data-sort="implementationStage">Stage <span class="sort-icon"></span></th>
+              <th data-sort="riskTier">Risk <span class="sort-icon"></span></th>
+              <th data-sort="useCase">Use Case <span class="sort-icon"></span></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Card View -->
+    <div id="cardView" style="display:none;"></div>
+
+    <!-- Pagination -->
+    <div class="mt-3" id="pagination"></div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="py-3 mt-5 text-center">
+    <div class="container">
+      CCCCO AI Fellows &middot; Agentic AI Landscape Analysis &middot; 2025–2026<br>
+      <small>California Community Colleges Chancellor's Office</small>
+    </div>
+  </footer>
+
+  <!-- Detail Modal -->
+  <div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data-loader.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
