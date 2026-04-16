@@ -1815,6 +1815,19 @@
         "v2030Outcomes": "Outcome 1, Outcome 2",
         "fundingStatus": "San Diego CCD contract (pending)",
         "notes": "Expanding from SD District Office partnership. Final funding approval with Vice Chancellor in progress. Source: Savanna / Element 451 email."
+      },
+      {
+        "id": 3,
+        "aiProgram": "Nectir AI Course Assistant",
+        "vendor": "Nectir",
+        "useCase": "Academic Support / Course Assistant",
+        "implementationStage": "Deployed",
+        "innovationLifecycle": "Scale",
+        "riskTier": 1,
+        "targetPopulations": "All students",
+        "v2030Outcomes": "Outcome 2",
+        "fundingStatus": "CCCCO Systemwide Contract",
+        "notes": "Part of 84-campus pilot."
       }
     ]
   },
@@ -1855,6 +1868,19 @@
         "v2030Outcomes": "Outcome 1, Outcome 2",
         "fundingStatus": "College contract",
         "notes": "Full funnel CRM & AI. Emphasis on student tracking and engagement. Expanding use case to student success. Source: Savanna / Element 451 email."
+      },
+      {
+        "id": 3,
+        "aiProgram": "Nectir AI Course Assistant",
+        "vendor": "Nectir",
+        "useCase": "Academic Support / Course Assistant",
+        "implementationStage": "Deployed",
+        "innovationLifecycle": "Scale",
+        "riskTier": 1,
+        "targetPopulations": "All students",
+        "v2030Outcomes": "Outcome 2",
+        "fundingStatus": "CCCCO Systemwide Contract",
+        "notes": "Part of 84-campus pilot."
       }
     ]
   },
@@ -1882,6 +1908,19 @@
         "v2030Outcomes": "Outcome 2, Outcome 5",
         "fundingStatus": "CCCCO Systemwide Contract",
         "notes": "Part of ~80 college LightleapAI rollout."
+      },
+      {
+        "id": 2,
+        "aiProgram": "Nectir AI Course Assistant",
+        "vendor": "Nectir",
+        "useCase": "Academic Support / Course Assistant",
+        "implementationStage": "Deployed",
+        "innovationLifecycle": "Scale",
+        "riskTier": 1,
+        "targetPopulations": "All students",
+        "v2030Outcomes": "Outcome 2",
+        "fundingStatus": "CCCCO Systemwide Contract",
+        "notes": "Part of 84-campus pilot."
       }
     ]
   },
@@ -1909,6 +1948,19 @@
         "v2030Outcomes": "Outcome 2, Outcome 5",
         "fundingStatus": "CCCCO Systemwide Contract",
         "notes": "Part of ~80 college LightleapAI rollout."
+      },
+      {
+        "id": 2,
+        "aiProgram": "Nectir AI Course Assistant",
+        "vendor": "Nectir",
+        "useCase": "Academic Support / Course Assistant",
+        "implementationStage": "Deployed",
+        "innovationLifecycle": "Scale",
+        "riskTier": 1,
+        "targetPopulations": "All students",
+        "v2030Outcomes": "Outcome 2",
+        "fundingStatus": "CCCCO Systemwide Contract",
+        "notes": "Part of 84-campus pilot."
       }
     ]
   },
@@ -1936,6 +1988,19 @@
         "v2030Outcomes": "Outcome 2, Outcome 5",
         "fundingStatus": "CCCCO Systemwide Contract",
         "notes": "Part of ~80 college LightleapAI rollout."
+      },
+      {
+        "id": 2,
+        "aiProgram": "Nectir AI Course Assistant",
+        "vendor": "Nectir",
+        "useCase": "Academic Support / Course Assistant",
+        "implementationStage": "Deployed",
+        "innovationLifecycle": "Scale",
+        "riskTier": 1,
+        "targetPopulations": "All students",
+        "v2030Outcomes": "Outcome 2",
+        "fundingStatus": "CCCCO Systemwide Contract",
+        "notes": "Part of 84-campus pilot."
       }
     ]
   },
@@ -1963,6 +2028,19 @@
         "v2030Outcomes": "Outcome 2, Outcome 5",
         "fundingStatus": "CCCCO Systemwide Contract",
         "notes": "Part of ~80 college LightleapAI rollout."
+      },
+      {
+        "id": 2,
+        "aiProgram": "Nectir AI Course Assistant",
+        "vendor": "Nectir",
+        "useCase": "Academic Support / Course Assistant",
+        "implementationStage": "Deployed",
+        "innovationLifecycle": "Scale",
+        "riskTier": 1,
+        "targetPopulations": "All students",
+        "v2030Outcomes": "Outcome 2",
+        "fundingStatus": "CCCCO Systemwide Contract",
+        "notes": "Part of 84-campus pilot."
       }
     ]
   },
@@ -1990,6 +2068,19 @@
         "v2030Outcomes": "Outcome 2, Outcome 5",
         "fundingStatus": "CCCCO Systemwide Contract",
         "notes": "Part of ~80 college LightleapAI rollout."
+      },
+      {
+        "id": 2,
+        "aiProgram": "Nectir AI Course Assistant (Access)",
+        "vendor": "Nectir",
+        "useCase": "Academic Support / Course Assistant",
+        "implementationStage": "Exploring",
+        "innovationLifecycle": "Design/Refine",
+        "riskTier": 1,
+        "targetPopulations": "All students, First Gen, Latinx",
+        "v2030Outcomes": "Outcome 2",
+        "fundingStatus": "CCCCO Systemwide Contract",
+        "notes": "Systemwide access. High-equity serving. Confirm deployment."
       }
     ]
   },
@@ -2788,168 +2879,6 @@
   },
   {
     "id": 97,
-    "collegeName": "San Diego City College (Nectir)",
-    "district": "San Diego CCD",
-    "region": "San Diego / Imperial",
-    "cioName": "",
-    "cioEmail": "",
-    "contactName": "",
-    "contactRole": "",
-    "contactEmail": "",
-    "aiFellow": "",
-    "initiatives": [
-      {
-        "id": 1,
-        "aiProgram": "Nectir AI Course Assistant",
-        "vendor": "Nectir",
-        "useCase": "Academic Support / Course Assistant",
-        "implementationStage": "Deployed",
-        "innovationLifecycle": "Scale",
-        "riskTier": 1,
-        "targetPopulations": "All students",
-        "v2030Outcomes": "Outcome 2",
-        "fundingStatus": "CCCCO Systemwide Contract",
-        "notes": "Part of 84-campus pilot."
-      }
-    ]
-  },
-  {
-    "id": 98,
-    "collegeName": "San Diego Miramar College (Nectir)",
-    "district": "San Diego CCD",
-    "region": "San Diego / Imperial",
-    "cioName": "",
-    "cioEmail": "",
-    "contactName": "",
-    "contactRole": "",
-    "contactEmail": "",
-    "aiFellow": "",
-    "initiatives": [
-      {
-        "id": 1,
-        "aiProgram": "Nectir AI Course Assistant",
-        "vendor": "Nectir",
-        "useCase": "Academic Support / Course Assistant",
-        "implementationStage": "Deployed",
-        "innovationLifecycle": "Scale",
-        "riskTier": 1,
-        "targetPopulations": "All students",
-        "v2030Outcomes": "Outcome 2",
-        "fundingStatus": "CCCCO Systemwide Contract",
-        "notes": "Part of 84-campus pilot."
-      }
-    ]
-  },
-  {
-    "id": 99,
-    "collegeName": "Grossmont College (Nectir)",
-    "district": "Grossmont-Cuyamaca CCD",
-    "region": "San Diego / Imperial",
-    "cioName": "",
-    "cioEmail": "",
-    "contactName": "",
-    "contactRole": "",
-    "contactEmail": "",
-    "aiFellow": "",
-    "initiatives": [
-      {
-        "id": 1,
-        "aiProgram": "Nectir AI Course Assistant",
-        "vendor": "Nectir",
-        "useCase": "Academic Support / Course Assistant",
-        "implementationStage": "Deployed",
-        "innovationLifecycle": "Scale",
-        "riskTier": 1,
-        "targetPopulations": "All students",
-        "v2030Outcomes": "Outcome 2",
-        "fundingStatus": "CCCCO Systemwide Contract",
-        "notes": "Part of 84-campus pilot."
-      }
-    ]
-  },
-  {
-    "id": 100,
-    "collegeName": "Cuyamaca College (Nectir)",
-    "district": "Grossmont-Cuyamaca CCD",
-    "region": "San Diego / Imperial",
-    "cioName": "",
-    "cioEmail": "",
-    "contactName": "",
-    "contactRole": "",
-    "contactEmail": "",
-    "aiFellow": "",
-    "initiatives": [
-      {
-        "id": 1,
-        "aiProgram": "Nectir AI Course Assistant",
-        "vendor": "Nectir",
-        "useCase": "Academic Support / Course Assistant",
-        "implementationStage": "Deployed",
-        "innovationLifecycle": "Scale",
-        "riskTier": 1,
-        "targetPopulations": "All students",
-        "v2030Outcomes": "Outcome 2",
-        "fundingStatus": "CCCCO Systemwide Contract",
-        "notes": "Part of 84-campus pilot."
-      }
-    ]
-  },
-  {
-    "id": 101,
-    "collegeName": "MiraCosta College (Nectir)",
-    "district": "MiraCosta CCD",
-    "region": "San Diego / Imperial",
-    "cioName": "",
-    "cioEmail": "",
-    "contactName": "",
-    "contactRole": "",
-    "contactEmail": "",
-    "aiFellow": "",
-    "initiatives": [
-      {
-        "id": 1,
-        "aiProgram": "Nectir AI Course Assistant",
-        "vendor": "Nectir",
-        "useCase": "Academic Support / Course Assistant",
-        "implementationStage": "Deployed",
-        "innovationLifecycle": "Scale",
-        "riskTier": 1,
-        "targetPopulations": "All students",
-        "v2030Outcomes": "Outcome 2",
-        "fundingStatus": "CCCCO Systemwide Contract",
-        "notes": "Part of 84-campus pilot."
-      }
-    ]
-  },
-  {
-    "id": 102,
-    "collegeName": "Southwestern College (Nectir)",
-    "district": "Southwestern CCD",
-    "region": "San Diego / Imperial",
-    "cioName": "",
-    "cioEmail": "",
-    "contactName": "",
-    "contactRole": "",
-    "contactEmail": "",
-    "aiFellow": "",
-    "initiatives": [
-      {
-        "id": 1,
-        "aiProgram": "Nectir AI Course Assistant",
-        "vendor": "Nectir",
-        "useCase": "Academic Support / Course Assistant",
-        "implementationStage": "Deployed",
-        "innovationLifecycle": "Scale",
-        "riskTier": 1,
-        "targetPopulations": "All students",
-        "v2030Outcomes": "Outcome 2",
-        "fundingStatus": "CCCCO Systemwide Contract",
-        "notes": "Part of 84-campus pilot."
-      }
-    ]
-  },
-  {
-    "id": 103,
     "collegeName": "Moreno Valley College",
     "district": "Riverside CCD",
     "region": "Inland Southern CA",
@@ -2989,7 +2918,7 @@
     ]
   },
   {
-    "id": 104,
+    "id": 98,
     "collegeName": "Norco College",
     "district": "Riverside CCD",
     "region": "Inland Southern CA",
@@ -3029,7 +2958,7 @@
     ]
   },
   {
-    "id": 105,
+    "id": 99,
     "collegeName": "San Bernardino Valley College",
     "district": "San Bernardino CCD",
     "region": "Inland Southern CA",
@@ -3056,7 +2985,7 @@
     ]
   },
   {
-    "id": 106,
+    "id": 100,
     "collegeName": "Crafton Hills College",
     "district": "San Bernardino CCD",
     "region": "Inland Southern CA",
@@ -3083,7 +3012,7 @@
     ]
   },
   {
-    "id": 107,
+    "id": 101,
     "collegeName": "Mt. San Jacinto College",
     "district": "Mt. San Jacinto CCD",
     "region": "Inland Southern CA",
@@ -3110,7 +3039,7 @@
     ]
   },
   {
-    "id": 108,
+    "id": 102,
     "collegeName": "College of the Desert",
     "district": "Desert CCD",
     "region": "Inland Southern CA",
@@ -3137,7 +3066,7 @@
     ]
   },
   {
-    "id": 109,
+    "id": 103,
     "collegeName": "Victor Valley College",
     "district": "Victor Valley CCD",
     "region": "Inland Southern CA",
@@ -3164,7 +3093,7 @@
     ]
   },
   {
-    "id": 110,
+    "id": 104,
     "collegeName": "Shasta College",
     "district": "Shasta-Tehama-Trinity Joint CCD",
     "region": "Inland Northern CA",
@@ -3191,7 +3120,7 @@
     ]
   },
   {
-    "id": 111,
+    "id": 105,
     "collegeName": "College of the Siskiyous",
     "district": "Siskiyous Joint CCD",
     "region": "Inland Northern CA",
@@ -3218,7 +3147,7 @@
     ]
   },
   {
-    "id": 112,
+    "id": 106,
     "collegeName": "Palo Verde College",
     "district": "Palo Verde CCD",
     "region": "Inland Southern CA",
@@ -3245,7 +3174,7 @@
     ]
   },
   {
-    "id": 113,
+    "id": 107,
     "collegeName": "Copper Mountain College",
     "district": "Copper Mountain CCD",
     "region": "Inland Southern CA",
@@ -3272,7 +3201,7 @@
     ]
   },
   {
-    "id": 114,
+    "id": 108,
     "collegeName": "Barstow Community College",
     "district": "Barstow CCD",
     "region": "Inland Southern CA",
@@ -3299,7 +3228,7 @@
     ]
   },
   {
-    "id": 115,
+    "id": 109,
     "collegeName": "Feather River College",
     "district": "Feather River CCD",
     "region": "Inland Northern CA",
@@ -3326,7 +3255,7 @@
     ]
   },
   {
-    "id": 116,
+    "id": 110,
     "collegeName": "Lake Tahoe Community College",
     "district": "Lake Tahoe CCD",
     "region": "Inland Northern CA",
@@ -3353,7 +3282,7 @@
     ]
   },
   {
-    "id": 117,
+    "id": 111,
     "collegeName": "Taft College",
     "district": "West Kern CCD",
     "region": "San Joaquin Valley",
@@ -3380,7 +3309,7 @@
     ]
   },
   {
-    "id": 118,
+    "id": 112,
     "collegeName": "College of Marin",
     "district": "Marin CCD",
     "region": "Bay Area",
@@ -3407,34 +3336,7 @@
     ]
   },
   {
-    "id": 119,
-    "collegeName": "Imperial Valley College (Nectir)",
-    "district": "Imperial CCD",
-    "region": "San Diego / Imperial",
-    "cioName": "",
-    "cioEmail": "",
-    "contactName": "",
-    "contactRole": "",
-    "contactEmail": "",
-    "aiFellow": "",
-    "initiatives": [
-      {
-        "id": 1,
-        "aiProgram": "Nectir AI Course Assistant (Access)",
-        "vendor": "Nectir",
-        "useCase": "Academic Support / Course Assistant",
-        "implementationStage": "Exploring",
-        "innovationLifecycle": "Design/Refine",
-        "riskTier": 1,
-        "targetPopulations": "All students, First Gen, Latinx",
-        "v2030Outcomes": "Outcome 2",
-        "fundingStatus": "CCCCO Systemwide Contract",
-        "notes": "Systemwide access. High-equity serving. Confirm deployment."
-      }
-    ]
-  },
-  {
-    "id": 120,
+    "id": 113,
     "collegeName": "Santa Ana College",
     "district": "Rancho Santiago CCD",
     "region": "Inland Southern CA",
@@ -3461,7 +3363,7 @@
     ]
   },
   {
-    "id": 121,
+    "id": 114,
     "collegeName": "San Diego College of Continuing Education",
     "district": "San Diego CCD",
     "region": "San Diego / Imperial",
@@ -3501,7 +3403,7 @@
     ]
   },
   {
-    "id": 122,
+    "id": 115,
     "collegeName": "North Orange Continuing Education",
     "district": "North Orange County CCD",
     "region": "South Coast",
@@ -3528,7 +3430,7 @@
     ]
   },
   {
-    "id": 123,
+    "id": 116,
     "collegeName": "Calbright College",
     "district": "Calbright College",
     "region": "Statewide (Online)",
@@ -3555,7 +3457,7 @@
     ]
   },
   {
-    "id": 124,
+    "id": 117,
     "collegeName": "San Diego CCD District Office",
     "district": "San Diego CCD",
     "region": "San Diego / Imperial",
