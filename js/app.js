@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function renderStats() {
     const stats = DataLoader.getStats();
     document.getElementById('statInitiatives').textContent = stats.totalInitiatives;
-    document.getElementById('statColleges').textContent = stats.uniqueColleges;
+    document.getElementById('statColleges').textContent = stats.totalColleges;
     document.getElementById('statDeployed').textContent = stats.deployed;
     document.getElementById('statVendors').textContent = stats.uniqueVendors;
     document.getElementById('statRegions').textContent = stats.regions;
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     populateSelect('filterRegion', DataLoader.getUniqueValues('region'));
     populateSelect('filterVendor', DataLoader.getUniqueValues('vendor'));
     populateSelect('filterStage', DataLoader.getUniqueValues('implementationStage'));
-    populateSelect('filterRisk', ['1', '2', '3'], v => `Tier ${v}`);
+    populateSelect('filterRisk', ['1', '2', '3'], v => 'Tier ' + v);
     populateSelect('filterUseCase', DataLoader.getUniqueValues('useCase'));
   }
 
@@ -96,20 +96,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function renderVendorCards() {
+    const vendorData = DataLoader.getVendorSummary();
     const container = document.getElementById('vendorCards');
-    // Get vendor counts from actual data
-    const vendorCounts = {};
-    colleges.forEach(c => {
-      if (c.vendor) {
-        vendorCounts[c.vendor] = (vendorCounts[c.vendor] || 0) + 1;
-      }
-    });
-    const sorted = Object.entries(vendorCounts).sort((a, b) => b[1] - a[1]);
-    container.innerHTML = sorted.map(([name, count]) => `
+    container.innerHTML = vendorData.map(([name, count]) => `
       <div class="col">
         <div class="vendor-card" role="button" onclick="filterByVendor('${name.replace(/'/g, "\\'")}')">
           <div class="vendor-count">${count}</div>
-          <div class="vendor-label">colleges</div>
+          <div class="vendor-label">initiatives</div>
           <div class="vendor-name mt-1">${name}</div>
         </div>
       </div>
@@ -128,17 +121,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     let filtered = DataLoader.filter(currentFilters);
     filtered = DataLoader.sort(filtered, currentSort.field, currentSort.asc);
 
-    // Active filters display
     renderActiveFilters();
 
-    // Results info
     const totalPages = Math.ceil(filtered.length / perPage);
     if (currentPage > totalPages) currentPage = 1;
     const start = (currentPage - 1) * perPage;
     const pageData = filtered.slice(start, start + perPage);
 
     document.getElementById('resultsInfo').textContent =
-      `Showing ${start + 1}–${Math.min(start + perPage, filtered.length)} of ${filtered.length} initiatives`;
+      'Showing ' + (start + 1) + '–' + Math.min(start + perPage, filtered.length) + ' of ' + filtered.length + ' colleges';
 
     if (currentView === 'table') {
       document.getElementById('tableView').style.display = 'block';
@@ -166,9 +157,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
     container.innerHTML = active.map(([key, val]) =>
-      `<span class="filter-badge">${labels[key] || key}: ${val}
-        <button class="btn-close btn-close-white btn-sm" onclick="removeFilter('${key}')"></button>
-      </span>`
+      '<span class="filter-badge">' + (labels[key] || key) + ': ' + val +
+        ' <button class="btn-close btn-close-white btn-sm" onclick="removeFilter(\'' + key + '\')"></button>' +
+      '</span>'
     ).join('');
   }
 
@@ -183,56 +174,59 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function renderTable(data) {
     const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = data.map(c => `
-      <tr onclick="showDetail(${c.id})">
-        <td><strong>${c.collegeName}</strong></td>
-        <td>${c.district}</td>
-        <td>${c.region}</td>
-        <td>${c.aiProgram}</td>
-        <td>${c.vendor}</td>
-        <td>${stageBadge(c.implementationStage)}</td>
-        <td class="risk-${c.riskTier}">${c.riskTier ? 'Tier ' + c.riskTier : ''}</td>
-        <td>${c.useCase}</td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = data.map(c => {
+      const vendors = [...new Set(c.initiatives.map(i => i.vendor).filter(Boolean))].join(', ');
+      const stages = c.initiatives.map(i => stageBadge(i.implementationStage)).join(' ');
+      const risks = [...new Set(c.initiatives.map(i => i.riskTier).filter(Boolean))];
+      const riskDisplay = risks.map(r => '<span class="risk-' + r + '">T' + r + '</span>').join(' ');
+      const programs = c.initiatives.map(i => i.aiProgram).filter(Boolean).join('; ');
+      return '<tr onclick="showDetail(' + c.id + ')">' +
+        '<td><strong>' + c.collegeName + '</strong></td>' +
+        '<td>' + c.district + '</td>' +
+        '<td>' + c.region + '</td>' +
+        '<td>' + vendors + '</td>' +
+        '<td><span class="badge bg-info text-dark">' + c.initiatives.length + '</span></td>' +
+        '<td>' + stages + '</td>' +
+        '<td>' + riskDisplay + '</td>' +
+        '</tr>';
+    }).join('');
   }
 
   function renderCards(data) {
     const container = document.getElementById('cardView');
-    container.innerHTML = `<div class="row g-3">${data.map(c => `
-      <div class="col-md-4 col-lg-3">
-        <div class="college-card" onclick="showDetail(${c.id})">
-          <div class="d-flex justify-content-between align-items-start">
-            <div class="college-name">${c.collegeName}</div>
-            ${stageBadge(c.implementationStage)}
-          </div>
-          <div class="college-district">${c.district}</div>
-          <div class="college-program">${c.aiProgram}</div>
-          <div class="mt-2 d-flex justify-content-between">
-            <small class="text-muted">${c.vendor}</small>
-            <small class="risk-${c.riskTier}">${c.riskTier ? 'Tier ' + c.riskTier : ''}</small>
-          </div>
-        </div>
-      </div>
-    `).join('')}</div>`;
+    container.innerHTML = '<div class="row g-3">' + data.map(c => {
+      const vendors = [...new Set(c.initiatives.map(i => i.vendor).filter(Boolean))];
+      const stages = c.initiatives.map(i => stageBadge(i.implementationStage)).join(' ');
+      return '<div class="col-md-4 col-lg-3">' +
+        '<div class="college-card" onclick="showDetail(' + c.id + ')">' +
+          '<div class="d-flex justify-content-between align-items-start">' +
+            '<div class="college-name">' + c.collegeName + '</div>' +
+            '<span class="badge bg-info text-dark">' + c.initiatives.length + '</span>' +
+          '</div>' +
+          '<div class="college-district">' + c.district + '</div>' +
+          '<div class="mt-2">' + stages + '</div>' +
+          '<div class="mt-2"><small class="text-muted">' + vendors.join(', ') + '</small></div>' +
+        '</div>' +
+      '</div>';
+    }).join('') + '</div>';
   }
 
   function renderPagination(total, totalPages) {
     const container = document.getElementById('pagination');
     if (totalPages <= 1) { container.innerHTML = ''; return; }
     let html = '<ul class="pagination pagination-sm justify-content-center mb-0">';
-    html += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-      <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;">&laquo;</a></li>`;
+    html += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '">' +
+      '<a class="page-link" href="#" onclick="goToPage(' + (currentPage - 1) + '); return false;">&laquo;</a></li>';
     for (let i = 1; i <= totalPages; i++) {
       if (totalPages > 7 && i > 2 && i < totalPages - 1 && Math.abs(i - currentPage) > 1) {
         if (i === 3 || i === totalPages - 2) html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
         continue;
       }
-      html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
-        <a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a></li>`;
+      html += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '">' +
+        '<a class="page-link" href="#" onclick="goToPage(' + i + '); return false;">' + i + '</a></li>';
     }
-    html += `<li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-      <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;">&raquo;</a></li>`;
+    html += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '">' +
+      '<a class="page-link" href="#" onclick="goToPage(' + (currentPage + 1) + '); return false;">&raquo;</a></li>';
     html += '</ul>';
     container.innerHTML = html;
   }
@@ -261,62 +255,90 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!c) return;
     const modal = document.getElementById('detailModal');
     document.getElementById('modalTitle').textContent = c.collegeName;
-    document.getElementById('modalBody').innerHTML = `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <div class="detail-label">District</div>
-          <div class="detail-value">${c.district || '—'}</div>
-          <div class="detail-label">Region</div>
-          <div class="detail-value">${c.region || '—'}</div>
-          <div class="detail-label">AI Program / Initiative</div>
-          <div class="detail-value">${c.aiProgram || '—'}</div>
-          <div class="detail-label">Vendor / Partner</div>
-          <div class="detail-value">${c.vendor || '—'}</div>
-          <div class="detail-label">Use Case</div>
-          <div class="detail-value">${c.useCase || '—'}</div>
-          <div class="detail-label">Implementation Stage</div>
-          <div class="detail-value">${stageBadge(c.implementationStage)}</div>
-          <div class="detail-label">Innovation Lifecycle</div>
-          <div class="detail-value">${c.innovationLifecycle || '—'}</div>
-          <div class="detail-label">Risk Tier</div>
-          <div class="detail-value"><span class="risk-${c.riskTier}">${c.riskTier ? 'Tier ' + c.riskTier : '—'}</span></div>
-        </div>
-        <div class="col-md-6">
-          <div class="detail-label">Target Student Populations</div>
-          <div class="detail-value">${c.targetPopulations || '—'}</div>
-          <div class="detail-label">V2030 Outcome Alignment</div>
-          <div class="detail-value">${c.v2030Outcomes || '—'}</div>
-          <div class="detail-label">CIO / IT Director</div>
-          <div class="detail-value">${c.cioName || '—'}${c.cioEmail ? '<br><a href="mailto:' + c.cioEmail + '">' + c.cioEmail + '</a>' : ''}</div>
-          <div class="detail-label">Program Contact</div>
-          <div class="detail-value">${c.contactName || '—'}${c.contactRole ? '<br><small class="text-muted">' + c.contactRole + '</small>' : ''}${c.contactEmail ? '<br><a href="mailto:' + c.contactEmail + '">' + c.contactEmail + '</a>' : ''}</div>
-          <div class="detail-label">AI Fellow Assigned</div>
-          <div class="detail-value">${c.aiFellow || '—'}</div>
-          <div class="detail-label">Funding Status</div>
-          <div class="detail-value">${c.fundingStatus || '—'}</div>
-        </div>
-        <div class="col-12">
-          <div class="detail-label">Notes / Evidence</div>
-          <div class="detail-value" style="background: #f8f9fa; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem;">${c.notes || '—'}</div>
-        </div>
-      </div>
-    `;
+
+    // Build initiatives section
+    const initiativesHtml = c.initiatives.map((i, idx) => {
+      return '<div class="' + (idx > 0 ? 'border-top pt-3 mt-3' : '') + '">' +
+        '<div class="d-flex justify-content-between align-items-center mb-2">' +
+          '<h6 class="mb-0">' + (i.aiProgram || 'Initiative ' + (idx + 1)) + '</h6>' +
+          stageBadge(i.implementationStage) +
+        '</div>' +
+        '<div class="row g-2">' +
+          '<div class="col-md-6">' +
+            '<div class="detail-label">Vendor / Partner</div>' +
+            '<div class="detail-value">' + (i.vendor || '—') + '</div>' +
+          '</div>' +
+          '<div class="col-md-6">' +
+            '<div class="detail-label">Use Case</div>' +
+            '<div class="detail-value">' + (i.useCase || '—') + '</div>' +
+          '</div>' +
+          '<div class="col-md-4">' +
+            '<div class="detail-label">Innovation Lifecycle</div>' +
+            '<div class="detail-value">' + (i.innovationLifecycle || '—') + '</div>' +
+          '</div>' +
+          '<div class="col-md-4">' +
+            '<div class="detail-label">Risk Tier</div>' +
+            '<div class="detail-value"><span class="risk-' + i.riskTier + '">' + (i.riskTier ? 'Tier ' + i.riskTier : '—') + '</span></div>' +
+          '</div>' +
+          '<div class="col-md-4">' +
+            '<div class="detail-label">Funding</div>' +
+            '<div class="detail-value">' + (i.fundingStatus || '—') + '</div>' +
+          '</div>' +
+          '<div class="col-md-6">' +
+            '<div class="detail-label">Target Populations</div>' +
+            '<div class="detail-value">' + (i.targetPopulations || '—') + '</div>' +
+          '</div>' +
+          '<div class="col-md-6">' +
+            '<div class="detail-label">V2030 Outcomes</div>' +
+            '<div class="detail-value">' + (i.v2030Outcomes || '—') + '</div>' +
+          '</div>' +
+          (i.notes ? '<div class="col-12"><div class="detail-label">Notes</div>' +
+            '<div class="detail-value" style="background:#f8f9fa;padding:0.75rem;border-radius:8px;font-size:0.85rem;">' + i.notes + '</div></div>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    document.getElementById('modalBody').innerHTML =
+      '<div class="row g-3 mb-3">' +
+        '<div class="col-md-4">' +
+          '<div class="detail-label">District</div>' +
+          '<div class="detail-value">' + (c.district || '—') + '</div>' +
+        '</div>' +
+        '<div class="col-md-4">' +
+          '<div class="detail-label">Region</div>' +
+          '<div class="detail-value">' + (c.region || '—') + '</div>' +
+        '</div>' +
+        '<div class="col-md-4">' +
+          '<div class="detail-label">AI Fellow</div>' +
+          '<div class="detail-value">' + (c.aiFellow || '—') + '</div>' +
+        '</div>' +
+        '<div class="col-md-6">' +
+          '<div class="detail-label">CIO / IT Director</div>' +
+          '<div class="detail-value">' + (c.cioName || '—') +
+            (c.cioEmail ? '<br><a href="mailto:' + c.cioEmail + '">' + c.cioEmail + '</a>' : '') + '</div>' +
+        '</div>' +
+        '<div class="col-md-6">' +
+          '<div class="detail-label">Program Contact</div>' +
+          '<div class="detail-value">' + (c.contactName || '—') +
+            (c.contactRole ? '<br><small class="text-muted">' + c.contactRole + '</small>' : '') +
+            (c.contactEmail ? '<br><a href="mailto:' + c.contactEmail + '">' + c.contactEmail + '</a>' : '') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<h6 class="text-muted text-uppercase small mb-3 border-top pt-3">' +
+        '<i class="bi bi-cpu me-1"></i>AI Initiatives (' + c.initiatives.length + ')</h6>' +
+      initiativesHtml;
+
     new bootstrap.Modal(modal).show();
   };
 
   function stageBadge(stage) {
     if (!stage) return '';
-    const cls = {
-      'Deployed': 'badge-deployed',
-      'Pilot': 'badge-pilot',
-      'Planning': 'badge-planning',
-      'Exploring': 'badge-exploring'
-    }[stage] || 'bg-secondary';
-    return `<span class="badge ${cls}">${stage}</span>`;
+    var cls = { 'Deployed': 'badge-deployed', 'Pilot': 'badge-pilot', 'Planning': 'badge-planning', 'Exploring': 'badge-exploring' }[stage] || 'bg-secondary';
+    return '<span class="badge ' + cls + '">' + stage + '</span>';
   }
 
   function debounce(fn, ms) {
     let t;
-    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+    return function() { const args = arguments; clearTimeout(t); t = setTimeout(function() { fn.apply(null, args); }, ms); };
   }
 });

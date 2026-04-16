@@ -71,11 +71,11 @@
               <tr>
                 <th style="width:50px">ID</th>
                 <th>College</th>
-                <th>District</th>
-                <th>Vendor</th>
-                <th>AI Program</th>
-                <th>Stage</th>
-                <th style="width:100px">Actions</th>
+                <th>Region</th>
+                <th>Vendors</th>
+                <th>Stages</th>
+                <th># Init</th>
+                <th style="width:120px">Actions</th>
               </tr>
             </thead>
             <tbody id="adminTableBody"></tbody>
@@ -95,16 +95,16 @@
     </div>
   </div>
 
-  <!-- Add/Edit Modal -->
-  <div class="modal fade" id="formModal" tabindex="-1">
+  <!-- College Modal -->
+  <div class="modal fade" id="collegeModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="formModalTitle">Add New College Initiative</h5>
+          <h5 class="modal-title" id="collegeModalTitle">Add New College</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <form id="editForm">
+          <form id="collegeForm">
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label edit-form">College Name *</label>
@@ -114,43 +114,10 @@
                 <label class="form-label edit-form">District</label>
                 <input type="text" class="form-control" id="formDistrict">
               </div>
-              <div class="col-md-4">
+              <div class="col-md-12">
                 <label class="form-label edit-form">Region</label>
                 <select class="form-select" id="formRegion"><option value="">Select...</option></select>
               </div>
-              <div class="col-md-4">
-                <label class="form-label edit-form">Vendor / Partner</label>
-                <select class="form-select" id="formVendor"><option value="">Select...</option></select>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label edit-form">Use Case Category</label>
-                <select class="form-select" id="formUseCase"><option value="">Select...</option></select>
-              </div>
-              <div class="col-12">
-                <label class="form-label edit-form">AI Program / Initiative</label>
-                <input type="text" class="form-control" id="formAiProgram">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label edit-form">Implementation Stage</label>
-                <select class="form-select" id="formStage"><option value="">Select...</option></select>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label edit-form">Innovation Lifecycle</label>
-                <select class="form-select" id="formLifecycle"><option value="">Select...</option></select>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label edit-form">Risk Tier</label>
-                <select class="form-select" id="formRiskTier"><option value="">Select...</option></select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label edit-form">Target Student Populations</label>
-                <input type="text" class="form-control" id="formTargetPop">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label edit-form">V2030 Outcome Alignment</label>
-                <input type="text" class="form-control" id="formV2030">
-              </div>
-
               <div class="col-12"><hr><h6 class="text-muted">Contacts</h6></div>
               <div class="col-md-6">
                 <label class="form-label edit-form">CIO / IT Director Name</label>
@@ -172,24 +139,78 @@
                 <label class="form-label edit-form">Program Contact Email</label>
                 <input type="email" class="form-control" id="formContactEmail">
               </div>
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <label class="form-label edit-form">AI Fellow Assigned</label>
                 <input type="text" class="form-control" id="formAiFellow">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label edit-form">Funding Status</label>
-                <input type="text" class="form-control" id="formFunding">
-              </div>
-              <div class="col-12">
-                <label class="form-label edit-form">Notes / Evidence</label>
-                <textarea class="form-control" id="formNotes" rows="3"></textarea>
               </div>
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="saveRecord"><i class="bi bi-check-circle me-1"></i>Save</button>
+          <button type="button" class="btn btn-primary" id="saveCollege"><i class="bi bi-check-circle me-1"></i>Save College</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Initiative Modal -->
+  <div class="modal fade" id="initModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="initModalTitle">Add Initiative</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="initForm">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label edit-form">AI Program / Initiative</label>
+                <input type="text" class="form-control" id="formInitProgram">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label edit-form">Vendor / Partner</label>
+                <select class="form-select" id="formInitVendor"><option value="">Select...</option></select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label edit-form">Use Case Category</label>
+                <select class="form-select" id="formInitUseCase"><option value="">Select...</option></select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label edit-form">Implementation Stage</label>
+                <select class="form-select" id="formInitStage"><option value="">Select...</option></select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label edit-form">Innovation Lifecycle</label>
+                <select class="form-select" id="formInitLifecycle"><option value="">Select...</option></select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label edit-form">Risk Tier</label>
+                <select class="form-select" id="formInitRiskTier"><option value="">Select...</option></select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label edit-form">Target Student Populations</label>
+                <input type="text" class="form-control" id="formInitTargetPop">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label edit-form">V2030 Outcome Alignment</label>
+                <input type="text" class="form-control" id="formInitV2030">
+              </div>
+              <div class="col-12">
+                <label class="form-label edit-form">Funding Status</label>
+                <input type="text" class="form-control" id="formInitFunding">
+              </div>
+              <div class="col-12">
+                <label class="form-label edit-form">Notes / Evidence</label>
+                <textarea class="form-control" id="formInitNotes" rows="3"></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveInitiative"><i class="bi bi-check-circle me-1"></i>Save Initiative</button>
         </div>
       </div>
     </div>

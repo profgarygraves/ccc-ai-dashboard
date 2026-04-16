@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let colleges = [];
   let vendors = [];
-  let editingId = null;
+  let editingCollegeId = null;
+  let editingInitiativeIdx = null;
 
   // Password gate
   document.getElementById('loginBtn').addEventListener('click', tryLogin);
@@ -25,14 +26,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function loadData() {
     const stored = localStorage.getItem('ccc-colleges');
-    const storedVendors = localStorage.getItem('ccc-vendors');
     if (stored) {
       colleges = JSON.parse(stored);
-      vendors = storedVendors ? JSON.parse(storedVendors) : [];
     } else {
       const data = await DataLoader.load();
       colleges = data.colleges;
-      vendors = data.vendors;
     }
     renderAdminTable();
     populateFormDropdowns();
@@ -40,237 +38,312 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function saveToLocal() {
     localStorage.setItem('ccc-colleges', JSON.stringify(colleges));
-    localStorage.setItem('ccc-vendors', JSON.stringify(vendors));
   }
 
-  // Render admin table
   function renderAdminTable() {
     const tbody = document.getElementById('adminTableBody');
     const search = document.getElementById('adminSearch').value.toLowerCase();
     let filtered = colleges;
     if (search) {
-      filtered = colleges.filter(c =>
-        [c.collegeName, c.district, c.vendor, c.aiProgram].join(' ').toLowerCase().includes(search)
-      );
+      filtered = colleges.filter(c => {
+        var text = [c.collegeName, c.district, c.region].join(' ');
+        c.initiatives.forEach(function(i) { text += ' ' + i.vendor + ' ' + i.aiProgram; });
+        return text.toLowerCase().includes(search);
+      });
     }
-    tbody.innerHTML = filtered.map(c => `
-      <tr>
-        <td>${c.id}</td>
-        <td><strong>${c.collegeName}</strong></td>
-        <td>${c.district}</td>
-        <td>${c.vendor}</td>
-        <td>${c.aiProgram}</td>
-        <td><span class="badge ${stageBadgeClass(c.implementationStage)}">${c.implementationStage || ''}</span></td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary me-1" onclick="editRecord(${c.id})"><i class="bi bi-pencil"></i></button>
-          <button class="btn btn-sm btn-outline-danger" onclick="deleteRecord(${c.id})"><i class="bi bi-trash"></i></button>
-        </td>
-      </tr>
-    `).join('');
-    document.getElementById('adminCount').textContent = `${filtered.length} of ${colleges.length} records`;
+    tbody.innerHTML = filtered.map(c => {
+      var vendorList = [];
+      c.initiatives.forEach(function(i) { if (i.vendor && vendorList.indexOf(i.vendor) === -1) vendorList.push(i.vendor); });
+      var stages = c.initiatives.map(function(i) {
+        var cls = {'Deployed':'badge-deployed','Pilot':'badge-pilot','Planning':'badge-planning','Exploring':'badge-exploring'}[i.implementationStage] || 'bg-secondary';
+        return '<span class="badge ' + cls + ' me-1">' + (i.implementationStage || '?') + '</span>';
+      }).join('');
+      return '<tr>' +
+        '<td>' + c.id + '</td>' +
+        '<td><strong>' + c.collegeName + '</strong><br><small class="text-muted">' + c.district + '</small></td>' +
+        '<td>' + c.region + '</td>' +
+        '<td>' + vendorList.join(', ') + '</td>' +
+        '<td>' + stages + '</td>' +
+        '<td><span class="badge bg-info text-dark">' + c.initiatives.length + '</span></td>' +
+        '<td>' +
+          '<button class="btn btn-sm btn-outline-primary me-1" onclick="editCollege(' + c.id + ')" title="Edit college info"><i class="bi bi-pencil"></i></button>' +
+          '<button class="btn btn-sm btn-outline-success me-1" onclick="addInitiative(' + c.id + ')" title="Add initiative"><i class="bi bi-plus"></i></button>' +
+          '<button class="btn btn-sm btn-outline-danger" onclick="deleteCollege(' + c.id + ')" title="Delete college"><i class="bi bi-trash"></i></button>' +
+        '</td>' +
+      '</tr>' +
+      // Sub-rows for each initiative
+      c.initiatives.map(function(init, idx) {
+        return '<tr class="table-light">' +
+          '<td></td>' +
+          '<td colspan="2"><small><i class="bi bi-arrow-return-right me-1"></i>' + (init.aiProgram || '—') + '</small></td>' +
+          '<td><small>' + (init.vendor || '—') + '</small></td>' +
+          '<td><small>' + (init.useCase || '—') + '</small></td>' +
+          '<td><small class="risk-' + init.riskTier + '">' + (init.riskTier ? 'T' + init.riskTier : '') + '</small></td>' +
+          '<td>' +
+            '<button class="btn btn-sm btn-outline-secondary me-1" onclick="editInitiative(' + c.id + ',' + idx + ')" title="Edit initiative"><i class="bi bi-pencil"></i></button>' +
+            '<button class="btn btn-sm btn-outline-danger btn-xs" onclick="deleteInitiative(' + c.id + ',' + idx + ')" title="Remove initiative"><i class="bi bi-x"></i></button>' +
+          '</td>' +
+        '</tr>';
+      }).join('');
+    }).join('');
+    document.getElementById('adminCount').textContent = filtered.length + ' colleges, ' +
+      filtered.reduce(function(s, c) { return s + c.initiatives.length; }, 0) + ' initiatives';
   }
 
   document.getElementById('adminSearch').addEventListener('input', renderAdminTable);
 
-  // Populate dropdowns in the form
   function populateFormDropdowns() {
-    const regions = [...new Set(colleges.map(c => c.region).filter(Boolean))].sort();
-    const vendorNames = [...new Set(colleges.map(c => c.vendor).filter(Boolean))].sort();
-    const stages = ['Deployed', 'Pilot', 'Planning', 'Exploring', 'None Identified'];
-    const lifecycles = ['Scale', 'Test', 'Design/Refine'];
-    const useCases = [...new Set(colleges.map(c => c.useCase).filter(Boolean))].sort();
-
-    fillSelect('formRegion', regions, true);
-    fillSelect('formVendor', vendorNames, true);
-    fillSelect('formStage', stages);
-    fillSelect('formLifecycle', lifecycles);
-    fillSelect('formUseCase', useCases, true);
-    fillSelect('formRiskTier', ['1', '2', '3'], false, v => `Tier ${v}`);
+    var regions = [];
+    var vendorNames = [];
+    var useCases = [];
+    colleges.forEach(function(c) {
+      if (c.region && regions.indexOf(c.region) === -1) regions.push(c.region);
+      c.initiatives.forEach(function(i) {
+        if (i.vendor && vendorNames.indexOf(i.vendor) === -1) vendorNames.push(i.vendor);
+        if (i.useCase && useCases.indexOf(i.useCase) === -1) useCases.push(i.useCase);
+      });
+    });
+    regions.sort(); vendorNames.sort(); useCases.sort();
+    var stages = ['Deployed', 'Pilot', 'Planning', 'Exploring', 'None Identified'];
+    var lifecycles = ['Scale', 'Test', 'Design/Refine'];
+    fillSelect('formRegion', regions);
+    fillSelect('formInitVendor', vendorNames);
+    fillSelect('formInitStage', stages);
+    fillSelect('formInitLifecycle', lifecycles);
+    fillSelect('formInitUseCase', useCases);
+    fillSelect('formInitRiskTier', ['1', '2', '3'], function(v) { return 'Tier ' + v; });
   }
 
-  function fillSelect(id, values, addCustom = false, labelFn = null) {
-    const sel = document.getElementById(id);
-    // Keep existing first option
-    const firstOpt = sel.options[0];
+  function fillSelect(id, values, labelFn) {
+    var sel = document.getElementById(id);
+    if (!sel) return;
+    var firstOpt = sel.options[0];
     sel.innerHTML = '';
     sel.appendChild(firstOpt);
-    values.forEach(v => {
-      const opt = document.createElement('option');
+    values.forEach(function(v) {
+      var opt = document.createElement('option');
       opt.value = v;
       opt.textContent = labelFn ? labelFn(v) : v;
       sel.appendChild(opt);
     });
   }
 
-  // Add new
-  document.getElementById('addNewBtn').addEventListener('click', () => {
-    editingId = null;
-    document.getElementById('formModalTitle').textContent = 'Add New College Initiative';
-    document.getElementById('editForm').reset();
-    new bootstrap.Modal(document.getElementById('formModal')).show();
+  // --- College CRUD ---
+
+  document.getElementById('addNewBtn').addEventListener('click', function() {
+    editingCollegeId = null;
+    document.getElementById('collegeModalTitle').textContent = 'Add New College';
+    document.getElementById('collegeForm').reset();
+    new bootstrap.Modal(document.getElementById('collegeModal')).show();
   });
 
-  // Edit
-  window.editRecord = function(id) {
-    const c = colleges.find(x => x.id === id);
+  window.editCollege = function(id) {
+    var c = colleges.find(function(x) { return x.id === id; });
     if (!c) return;
-    editingId = id;
-    document.getElementById('formModalTitle').textContent = 'Edit: ' + c.collegeName;
+    editingCollegeId = id;
+    document.getElementById('collegeModalTitle').textContent = 'Edit: ' + c.collegeName;
     document.getElementById('formCollegeName').value = c.collegeName;
     document.getElementById('formDistrict').value = c.district;
     document.getElementById('formRegion').value = c.region;
-    document.getElementById('formAiProgram').value = c.aiProgram;
-    document.getElementById('formVendor').value = c.vendor;
-    document.getElementById('formUseCase').value = c.useCase;
-    document.getElementById('formStage').value = c.implementationStage;
-    document.getElementById('formLifecycle').value = c.innovationLifecycle;
-    document.getElementById('formRiskTier').value = c.riskTier || '';
-    document.getElementById('formTargetPop').value = c.targetPopulations;
-    document.getElementById('formV2030').value = c.v2030Outcomes;
     document.getElementById('formCioName').value = c.cioName;
     document.getElementById('formCioEmail').value = c.cioEmail;
     document.getElementById('formContactName').value = c.contactName;
     document.getElementById('formContactRole').value = c.contactRole;
     document.getElementById('formContactEmail').value = c.contactEmail;
     document.getElementById('formAiFellow').value = c.aiFellow;
-    document.getElementById('formFunding').value = c.fundingStatus;
-    document.getElementById('formNotes').value = c.notes;
-    new bootstrap.Modal(document.getElementById('formModal')).show();
+    new bootstrap.Modal(document.getElementById('collegeModal')).show();
   };
 
-  // Save form
-  document.getElementById('saveRecord').addEventListener('click', () => {
-    const record = {
-      id: editingId || (Math.max(0, ...colleges.map(c => c.id)) + 1),
-      collegeName: document.getElementById('formCollegeName').value.trim(),
-      district: document.getElementById('formDistrict').value.trim(),
-      region: document.getElementById('formRegion').value,
-      aiProgram: document.getElementById('formAiProgram').value.trim(),
-      vendor: document.getElementById('formVendor').value,
-      useCase: document.getElementById('formUseCase').value,
-      implementationStage: document.getElementById('formStage').value,
-      innovationLifecycle: document.getElementById('formLifecycle').value,
-      riskTier: parseInt(document.getElementById('formRiskTier').value) || 0,
-      targetPopulations: document.getElementById('formTargetPop').value.trim(),
-      v2030Outcomes: document.getElementById('formV2030').value.trim(),
-      cioName: document.getElementById('formCioName').value.trim(),
-      cioEmail: document.getElementById('formCioEmail').value.trim(),
-      contactName: document.getElementById('formContactName').value.trim(),
-      contactRole: document.getElementById('formContactRole').value.trim(),
-      contactEmail: document.getElementById('formContactEmail').value.trim(),
-      aiFellow: document.getElementById('formAiFellow').value.trim(),
-      fundingStatus: document.getElementById('formFunding').value.trim(),
-      notes: document.getElementById('formNotes').value.trim()
-    };
+  document.getElementById('saveCollege').addEventListener('click', function() {
+    var name = document.getElementById('formCollegeName').value.trim();
+    if (!name) { alert('College Name is required'); return; }
 
-    if (!record.collegeName) {
-      alert('College Name is required');
-      return;
-    }
-
-    if (editingId) {
-      const idx = colleges.findIndex(c => c.id === editingId);
-      if (idx >= 0) colleges[idx] = record;
+    if (editingCollegeId) {
+      var c = colleges.find(function(x) { return x.id === editingCollegeId; });
+      if (c) {
+        c.collegeName = name;
+        c.district = document.getElementById('formDistrict').value.trim();
+        c.region = document.getElementById('formRegion').value;
+        c.cioName = document.getElementById('formCioName').value.trim();
+        c.cioEmail = document.getElementById('formCioEmail').value.trim();
+        c.contactName = document.getElementById('formContactName').value.trim();
+        c.contactRole = document.getElementById('formContactRole').value.trim();
+        c.contactEmail = document.getElementById('formContactEmail').value.trim();
+        c.aiFellow = document.getElementById('formAiFellow').value.trim();
+      }
     } else {
-      colleges.push(record);
+      colleges.push({
+        id: Math.max(0, Math.max.apply(null, colleges.map(function(c) { return c.id; }))) + 1,
+        collegeName: name,
+        district: document.getElementById('formDistrict').value.trim(),
+        region: document.getElementById('formRegion').value,
+        cioName: document.getElementById('formCioName').value.trim(),
+        cioEmail: document.getElementById('formCioEmail').value.trim(),
+        contactName: document.getElementById('formContactName').value.trim(),
+        contactRole: document.getElementById('formContactRole').value.trim(),
+        contactEmail: document.getElementById('formContactEmail').value.trim(),
+        aiFellow: document.getElementById('formAiFellow').value.trim(),
+        initiatives: []
+      });
     }
-
     saveToLocal();
     renderAdminTable();
-    bootstrap.Modal.getInstance(document.getElementById('formModal')).hide();
-    showToast(editingId ? 'Record updated' : 'Record added');
-    editingId = null;
+    bootstrap.Modal.getInstance(document.getElementById('collegeModal')).hide();
+    showToast(editingCollegeId ? 'College updated' : 'College added');
+    editingCollegeId = null;
   });
 
-  // Delete
-  window.deleteRecord = function(id) {
-    const c = colleges.find(x => x.id === id);
+  window.deleteCollege = function(id) {
+    var c = colleges.find(function(x) { return x.id === id; });
     if (!c) return;
-    if (!confirm(`Delete "${c.collegeName} - ${c.aiProgram}"?`)) return;
-    colleges = colleges.filter(x => x.id !== id);
+    if (!confirm('Delete "' + c.collegeName + '" and all its initiatives?')) return;
+    colleges = colleges.filter(function(x) { return x.id !== id; });
     saveToLocal();
     renderAdminTable();
-    showToast('Record deleted');
+    showToast('College deleted');
   };
 
-  // Export JSON
-  document.getElementById('exportBtn').addEventListener('click', () => {
+  // --- Initiative CRUD ---
+
+  window.addInitiative = function(collegeId) {
+    editingCollegeId = collegeId;
+    editingInitiativeIdx = null;
+    var c = colleges.find(function(x) { return x.id === collegeId; });
+    document.getElementById('initModalTitle').textContent = 'Add Initiative — ' + c.collegeName;
+    document.getElementById('initForm').reset();
+    new bootstrap.Modal(document.getElementById('initModal')).show();
+  };
+
+  window.editInitiative = function(collegeId, idx) {
+    var c = colleges.find(function(x) { return x.id === collegeId; });
+    if (!c || !c.initiatives[idx]) return;
+    editingCollegeId = collegeId;
+    editingInitiativeIdx = idx;
+    var init = c.initiatives[idx];
+    document.getElementById('initModalTitle').textContent = 'Edit Initiative — ' + c.collegeName;
+    document.getElementById('formInitProgram').value = init.aiProgram || '';
+    document.getElementById('formInitVendor').value = init.vendor || '';
+    document.getElementById('formInitUseCase').value = init.useCase || '';
+    document.getElementById('formInitStage').value = init.implementationStage || '';
+    document.getElementById('formInitLifecycle').value = init.innovationLifecycle || '';
+    document.getElementById('formInitRiskTier').value = init.riskTier || '';
+    document.getElementById('formInitTargetPop').value = init.targetPopulations || '';
+    document.getElementById('formInitV2030').value = init.v2030Outcomes || '';
+    document.getElementById('formInitFunding').value = init.fundingStatus || '';
+    document.getElementById('formInitNotes').value = init.notes || '';
+    new bootstrap.Modal(document.getElementById('initModal')).show();
+  };
+
+  document.getElementById('saveInitiative').addEventListener('click', function() {
+    var c = colleges.find(function(x) { return x.id === editingCollegeId; });
+    if (!c) return;
+
+    var init = {
+      id: (editingInitiativeIdx !== null) ? c.initiatives[editingInitiativeIdx].id : c.initiatives.length + 1,
+      aiProgram: document.getElementById('formInitProgram').value.trim(),
+      vendor: document.getElementById('formInitVendor').value,
+      useCase: document.getElementById('formInitUseCase').value,
+      implementationStage: document.getElementById('formInitStage').value,
+      innovationLifecycle: document.getElementById('formInitLifecycle').value,
+      riskTier: parseInt(document.getElementById('formInitRiskTier').value) || 0,
+      targetPopulations: document.getElementById('formInitTargetPop').value.trim(),
+      v2030Outcomes: document.getElementById('formInitV2030').value.trim(),
+      fundingStatus: document.getElementById('formInitFunding').value.trim(),
+      notes: document.getElementById('formInitNotes').value.trim()
+    };
+
+    if (editingInitiativeIdx !== null) {
+      c.initiatives[editingInitiativeIdx] = init;
+    } else {
+      c.initiatives.push(init);
+    }
+
+    saveToLocal();
+    renderAdminTable();
+    bootstrap.Modal.getInstance(document.getElementById('initModal')).hide();
+    showToast(editingInitiativeIdx !== null ? 'Initiative updated' : 'Initiative added');
+    editingInitiativeIdx = null;
+  });
+
+  window.deleteInitiative = function(collegeId, idx) {
+    var c = colleges.find(function(x) { return x.id === collegeId; });
+    if (!c || !c.initiatives[idx]) return;
+    var init = c.initiatives[idx];
+    if (!confirm('Remove "' + (init.aiProgram || init.vendor) + '" from ' + c.collegeName + '?')) return;
+    c.initiatives.splice(idx, 1);
+    saveToLocal();
+    renderAdminTable();
+    showToast('Initiative removed');
+  };
+
+  // --- Export ---
+
+  document.getElementById('exportBtn').addEventListener('click', function() {
     downloadJSON(colleges, 'colleges.json');
   });
 
-  document.getElementById('exportVendorsBtn').addEventListener('click', () => {
-    // Rebuild vendor list from current data
-    const vendorMap = {};
-    colleges.forEach(c => {
-      if (c.vendor) {
-        if (!vendorMap[c.vendor]) vendorMap[c.vendor] = { name: c.vendor, useCases: new Set(), collegeCount: 0 };
-        vendorMap[c.vendor].collegeCount++;
-        if (c.useCase) vendorMap[c.vendor].useCases.add(c.useCase);
-      }
+  document.getElementById('exportVendorsBtn').addEventListener('click', function() {
+    var vendorMap = {};
+    colleges.forEach(function(c) {
+      c.initiatives.forEach(function(i) {
+        if (i.vendor) {
+          if (!vendorMap[i.vendor]) vendorMap[i.vendor] = { name: i.vendor, useCases: [], collegeCount: 0 };
+          vendorMap[i.vendor].collegeCount++;
+          if (i.useCase && vendorMap[i.vendor].useCases.indexOf(i.useCase) === -1)
+            vendorMap[i.vendor].useCases.push(i.useCase);
+        }
+      });
     });
-    const vendorList = Object.values(vendorMap).map((v, i) => ({
-      id: i + 1, name: v.name, useCases: [...v.useCases], collegeCount: v.collegeCount, website: '', notes: ''
-    }));
+    var vendorList = Object.keys(vendorMap).sort().map(function(k, i) {
+      return { id: i + 1, name: vendorMap[k].name, useCases: vendorMap[k].useCases, collegeCount: vendorMap[k].collegeCount, website: '', notes: '' };
+    });
     downloadJSON(vendorList, 'vendors.json');
   });
 
-  // Reset to original data
-  document.getElementById('resetBtn').addEventListener('click', async () => {
+  document.getElementById('resetBtn').addEventListener('click', async function() {
     if (!confirm('Reset all changes and reload original data from JSON files?')) return;
     localStorage.removeItem('ccc-colleges');
     localStorage.removeItem('ccc-vendors');
-    const data = await DataLoader.load();
+    var data = await DataLoader.load();
     colleges = data.colleges;
-    vendors = data.vendors;
     renderAdminTable();
     showToast('Data reset to original');
   });
 
-  // Import XLSX
-  document.getElementById('importFile').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (!confirm('This will replace all current data with the imported file. Continue?')) {
-      e.target.value = '';
-      return;
-    }
-    showToast('Import feature coming soon - use JSON export/import for now');
+  document.getElementById('importFile').addEventListener('change', function(e) {
+    showToast('Import feature coming soon — use JSON export/import for now');
     e.target.value = '';
   });
 
   function downloadJSON(data, filename) {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
     a.href = url;
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
-    showToast(`Downloaded ${filename}`);
+    showToast('Downloaded ' + filename);
   }
 
   function showToast(msg) {
-    const container = document.querySelector('.toast-container') || (() => {
-      const div = document.createElement('div');
-      div.className = 'toast-container';
-      document.body.appendChild(div);
-      return div;
-    })();
-    const toast = document.createElement('div');
+    var container = document.querySelector('.toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
+    var toast = document.createElement('div');
     toast.className = 'toast show align-items-center text-bg-success border-0';
-    toast.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div>
-      <button class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button></div>`;
+    toast.innerHTML = '<div class="d-flex"><div class="toast-body">' + msg + '</div>' +
+      '<button class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button></div>';
     container.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  }
-
-  function stageBadgeClass(stage) {
-    return { 'Deployed': 'badge-deployed', 'Pilot': 'badge-pilot', 'Planning': 'badge-planning', 'Exploring': 'badge-exploring' }[stage] || 'bg-secondary';
+    setTimeout(function() { toast.remove(); }, 3000);
   }
 
   async function sha256(msg) {
-    const data = new TextEncoder().encode(msg);
-    const hash = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    var data = new TextEncoder().encode(msg);
+    var hash = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hash)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
   }
 });
