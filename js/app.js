@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return '<div class="' + (idx > 0 ? 'border-top pt-3 mt-3' : '') + '">' +
         '<div class="d-flex justify-content-between align-items-center mb-2">' +
           '<h6 class="mb-0">' + (i.aiProgram || 'Initiative ' + (idx + 1)) + '</h6>' +
-          stageBadge(i.implementationStage) +
+          '<span>' + stageBadge(i.implementationStage) + ' <span class="def-trigger" data-def="stage">?</span></span>' +
         '</div>' +
         '<div class="row g-2">' +
           '<div class="col-md-6">' +
@@ -273,11 +273,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             '<div class="detail-value">' + (i.useCase || '—') + '</div>' +
           '</div>' +
           '<div class="col-md-4">' +
-            '<div class="detail-label">Innovation Lifecycle</div>' +
+            '<div class="detail-label">Innovation Lifecycle <span class="def-trigger" data-def="lifecycle">?</span></div>' +
             '<div class="detail-value">' + (i.innovationLifecycle || '—') + '</div>' +
           '</div>' +
           '<div class="col-md-4">' +
-            '<div class="detail-label">Risk Tier</div>' +
+            '<div class="detail-label">Risk Tier <span class="def-trigger" data-def="risk">?</span></div>' +
             '<div class="detail-value"><span class="risk-' + i.riskTier + '">' + (i.riskTier ? 'Tier ' + i.riskTier : '—') + '</span></div>' +
           '</div>' +
           '<div class="col-md-4">' +
@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             '<div class="detail-value">' + (i.targetPopulations || '—') + '</div>' +
           '</div>' +
           '<div class="col-md-6">' +
-            '<div class="detail-label">V2030 Outcomes</div>' +
+            '<div class="detail-label">V2030 Outcomes <span class="def-trigger" data-def="v2030">?</span></div>' +
             '<div class="detail-value">' + (i.v2030Outcomes || '—') + '</div>' +
           '</div>' +
           (i.notes ? '<div class="col-12"><div class="detail-label">Notes</div>' +

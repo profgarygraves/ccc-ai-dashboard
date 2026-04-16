@@ -302,6 +302,65 @@ footer a {
   .navbar-brand { font-size: 1rem; }
 }
 
+/* Definition Tooltips */
+.def-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(0,51,102,0.12);
+  color: var(--ccc-blue);
+  font-size: 0.6rem;
+  font-weight: 700;
+  cursor: help;
+  margin-left: 4px;
+  vertical-align: middle;
+  position: relative;
+}
+.def-trigger:hover {
+  background: var(--ccc-blue);
+  color: #fff;
+}
+
+/* Popover overrides for definition popovers */
+.popover.def-popover {
+  max-width: 380px;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  border: 1px solid #ddd;
+}
+.popover.def-popover .popover-header {
+  background: var(--ccc-blue);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+}
+.popover.def-popover .popover-body {
+  padding: 0;
+}
+.def-table {
+  margin: 0;
+  font-size: 0.8rem;
+}
+.def-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 0.4rem 0.6rem;
+  border-color: #eee;
+}
+.def-table td {
+  padding: 0.4rem 0.6rem;
+  border-color: #eee;
+}
+.def-table tr:last-child td,
+.def-table tr:last-child th {
+  border-bottom: none;
+}
+
 /* Admin Styles */
 .admin-gate {
   max-width: 400px;
